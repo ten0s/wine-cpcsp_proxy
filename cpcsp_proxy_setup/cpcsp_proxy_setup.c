@@ -577,6 +577,64 @@ static BOOL register_publickey_encoders(HKEY hkey_main)
     return TRUE;
 }
 
+static BOOL register_object_encoders(HKEY hkey_main)
+{
+    static const struct
+    {
+        const char *oid;
+        const char *dll;
+        const char *function;
+    } info[] =
+    {
+        { "#4", proxy_dll, "CryptDllEncodeObjectEx" },
+    };
+    DWORD i;
+    HKEY hkey;
+
+    for (i = 0; i < ARRAY_SIZE(info); i++)
+    {
+        if (RegCreateKeyA(hkey_main, info[i].oid, &hkey))
+        {
+            printf("failed to create key %s\n", info[i].oid);
+            return FALSE;
+        }
+        RegSetValueExA(hkey, "Dll", 0, REG_SZ, (BYTE *)info[i].dll, strlen(info[i].dll));
+        RegSetValueExA(hkey, "FuncName", 0, REG_SZ, (BYTE *)info[i].function, strlen(info[i].function));
+        RegCloseKey(hkey);
+    }
+
+    return TRUE;
+}
+
+static BOOL register_object_decoders(HKEY hkey_main)
+{
+    static const struct
+    {
+        const char *oid;
+        const char *dll;
+        const char *function;
+    } info[] =
+    {
+        { "#4", proxy_dll, "CryptDllDecodeObjectEx" },
+    };
+    DWORD i;
+    HKEY hkey;
+
+    for (i = 0; i < ARRAY_SIZE(info); i++)
+    {
+        if (RegCreateKeyA(hkey_main, info[i].oid, &hkey))
+        {
+            printf("failed to create key %s\n", info[i].oid);
+            return FALSE;
+        }
+        RegSetValueExA(hkey, "Dll", 0, REG_SZ, (BYTE *)info[i].dll, strlen(info[i].dll));
+        RegSetValueExA(hkey, "FuncName", 0, REG_SZ, (BYTE *)info[i].function, strlen(info[i].function));
+        RegCloseKey(hkey);
+    }
+
+    return TRUE;
+}
+
 static void setup_oid_info(void)
 {
     HKEY hkey_main;
@@ -603,6 +661,22 @@ static void setup_oid_info(void)
         return;
     }
     register_publickey_encoders(hkey_main);
+    RegCloseKey(hkey_main);
+
+    if (RegCreateKeyA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Cryptography\\OID\\EncodingType 1\\CryptDllEncodeObjectEx", &hkey_main))
+    {
+        printf("failed to open OID info key\n");
+        return;
+    }
+    register_object_encoders(hkey_main);
+    RegCloseKey(hkey_main);
+
+    if (RegCreateKeyA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Cryptography\\OID\\EncodingType 1\\CryptDllDecodeObjectEx", &hkey_main))
+    {
+        printf("failed to open OID info key\n");
+        return;
+    }
+    register_object_decoders(hkey_main);
     RegCloseKey(hkey_main);
 }
 

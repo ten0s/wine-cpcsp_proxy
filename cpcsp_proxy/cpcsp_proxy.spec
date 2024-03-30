@@ -23,5 +23,8 @@
 @ stdcall CPSetProvParam(long long ptr long)
 @ stdcall CPSignHash(long long long wstr long ptr ptr)
 @ stdcall CPVerifySignature(long long ptr long long wstr long)
+
 @ stdcall CryptDllConvertPublicKeyInfo(long ptr long long ptr ptr)
 @ stdcall CryptDllEncodePublicKeyAndParameters(long str ptr long long ptr ptr ptr ptr ptr)
+@ stdcall CryptDllEncodeObjectEx(long str ptr long ptr ptr ptr)
+@ stdcall CryptDllDecodeObjectEx(long str ptr long long ptr ptr ptr)

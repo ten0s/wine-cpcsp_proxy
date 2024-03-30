@@ -67,8 +67,11 @@ static BOOL (*pCryptSignHashW)(HCRYPTHASH,DWORD,LPCWSTR,DWORD,BYTE *,DWORD *);
 static BOOL (*pCryptVerifySignatureW)(HCRYPTHASH,const BYTE *,DWORD,HCRYPTKEY,LPCWSTR,DWORD);
 static BOOL (*pCryptGetDefaultProviderA)(DWORD,DWORD *,DWORD,LPSTR,DWORD *);
 static BOOL (*pGetLastError)(void);
+
 static BOOL (*pRNetConvertPublicKeyInfo)(DWORD,CERT_PUBLIC_KEY_INFO *,ALG_ID,DWORD,BYTE **,DWORD *);
 static BOOL (*pRNetEncodePublicKeyAndParameters)(DWORD,LPSTR,BYTE *,DWORD,DWORD,void *,BYTE **,DWORD *,BYTE **,DWORD *);
+static BOOL (*pCryptEncodeObjectEx)(DWORD,LPCSTR,const void *,DWORD,PCRYPT_ENCODE_PARA,void *,DWORD *);
+static BOOL (*pCryptDecodeObjectEx)(DWORD,LPCSTR,const BYTE *,DWORD,DWORD,PCRYPT_DECODE_PARA,void *,DWORD *);
 
 static BOOL load_cpcsp(void)
 {
@@ -114,6 +117,8 @@ static BOOL load_cpcsp(void)
     LOAD_FUNCPTR(GetLastError);
     LOAD_FUNCPTR(RNetConvertPublicKeyInfo);
     LOAD_FUNCPTR(RNetEncodePublicKeyAndParameters);
+    LOAD_FUNCPTR(CryptEncodeObjectEx);
+    LOAD_FUNCPTR(CryptDecodeObjectEx);
 #undef LOAD_FUNCPTR
 
     return TRUE;
@@ -240,6 +245,50 @@ BOOL WINAPI CryptDllEncodePublicKeyAndParameters(DWORD type, LPSTR oid, BYTE *pu
     }
 
     return TRUE;
+}
+
+BOOL WINAPI CryptDllEncodeObjectEx(DWORD dwCertEncodingType,
+                                   LPCSTR lpszStructType,
+                                   const void *pvStructInfo,
+                                   DWORD dwFlags,
+                                   PCRYPT_ENCODE_PARA pEncodePara,
+                                   void *pvEncoded,
+                                   DWORD *pcbEncoded)
+{
+    BOOL ret;
+    TRACE("\n");
+    ret = pCryptEncodeObjectEx(dwCertEncodingType,
+                               lpszStructType,
+                               pvStructInfo,
+                               dwFlags,
+                               pEncodePara,
+                               pvEncoded,
+                               pcbEncoded);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+BOOL WINAPI CryptDllDecodeObjectEx(DWORD dwCertEncodingType,
+                                   LPCSTR lpszStructType,
+                                   const BYTE *pbEncoded,
+                                   DWORD cbEncoded,
+                                   DWORD dwFlags,
+                                   PCRYPT_DECODE_PARA pDecodePara,
+                                   void *pvStructInfo,
+                                   DWORD *pcbStructInfo)
+{
+    BOOL ret;
+    TRACE("\n");
+    ret = pCryptDecodeObjectEx(dwCertEncodingType,
+                               lpszStructType,
+                               pbEncoded,
+                               cbEncoded,
+                               dwFlags,
+                               pDecodePara,
+                               pvStructInfo,
+                               pcbStructInfo);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
 }
 
 BOOL WINAPI CPAcquireContext(HCRYPTPROV *prov, LPSTR container, DWORD flags, VTableProvStruc *vt)

@@ -28,8 +28,6 @@
 #include "winnls.h"
 #include "wine/debug.h"
 
-#include "api_hook.h"
-
 WINE_DEFAULT_DEBUG_CHANNEL(cpcsp_proxy);
 
 #ifdef _WIN64
@@ -71,8 +69,6 @@ static BOOL (*pCryptGetDefaultProviderA)(DWORD,DWORD *,DWORD,LPSTR,DWORD *);
 static BOOL (*pGetLastError)(void);
 static BOOL (*pRNetConvertPublicKeyInfo)(DWORD,CERT_PUBLIC_KEY_INFO *,ALG_ID,DWORD,BYTE **,DWORD *);
 static BOOL (*pRNetEncodePublicKeyAndParameters)(DWORD,LPSTR,BYTE *,DWORD,DWORD,void *,BYTE **,DWORD *,BYTE **,DWORD *);
-
-static HCRYPTPROV hprov_def;
 
 static BOOL load_cpcsp(void)
 {
@@ -130,53 +126,7 @@ static void unload_cpcsp(void)
 }
 
 /* Win32 */
-static HCRYPTPROV (WINAPI *orig_I_CryptGetDefaultCryptProv)(ALG_ID);
-static BOOL (WINAPI *orig_CryptContextAddRef)(HCRYPTPROV,DWORD *,DWORD);
 static LPVOID (WINAPI *orig_CryptMemAlloc)(ULONG);
-
-static void set_default_hprov(void)
-{
-    DWORD size;
-
-    if (pCryptGetDefaultProviderA(80, NULL, CRYPT_USER_DEFAULT, NULL, &size))
-    {
-        LPSTR def_prov_name = HeapAlloc(GetProcessHeap(), 0, size);
-        if (def_prov_name && pCryptGetDefaultProviderA(80, NULL, CRYPT_USER_DEFAULT, def_prov_name, &size))
-        {
-            HMODULE hmod = GetModuleHandleA("advapi32.dll");
-            if (hmod)
-            {
-                BOOL (WINAPI *pCryptAcquireContext)(HCRYPTPROV *,LPCSTR,LPCSTR,DWORD,DWORD);
-
-                pCryptAcquireContext = (void *)GetProcAddress(hmod, "CryptAcquireContextA");
-                if (pCryptAcquireContext)
-                {
-                    TRACE("CryptGetDefaultProviderA => %s\n", debugstr_a(def_prov_name));
-                    if (!pCryptAcquireContext(&hprov_def, NULL, def_prov_name, 80, CRYPT_VERIFYCONTEXT))
-                        WARN("error %#x\n", GetLastError());
-                    else
-                        TRACE("hprov_def => %#lx\n", hprov_def);
-                }
-
-                orig_CryptContextAddRef = (void *)GetProcAddress(hmod, "CryptContextAddRef");
-            }
-        }
-        HeapFree(GetProcessHeap(), 0, def_prov_name);
-    }
-}
-
-static HCRYPTPROV WINAPI hook_I_CryptGetDefaultCryptProv(ALG_ID algid)
-{
-    TRACE("%#x\n", algid);
-
-    if (hprov_def)
-    {
-        orig_CryptContextAddRef(hprov_def, NULL, 0);
-        return hprov_def;
-    }
-
-    return orig_I_CryptGetDefaultCryptProv(algid);
-}
 
 BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved)
 {
@@ -184,18 +134,11 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved)
     {
     case DLL_PROCESS_ATTACH:
         if (!load_cpcsp()) return FALSE;
-
-        set_default_hprov();
-        orig_I_CryptGetDefaultCryptProv = set_api_hook("crypt32.dll", "I_CryptGetDefaultCryptProv", hook_I_CryptGetDefaultCryptProv);
-        TRACE("orig_I_CryptGetDefaultCryptProv => %p\n", orig_I_CryptGetDefaultCryptProv);
-
         orig_CryptMemAlloc = (void *)GetProcAddress(GetModuleHandleA("crypt32.dll"), "CryptMemAlloc");
-
         DisableThreadLibraryCalls(hinst);
         break;
 
     case DLL_PROCESS_DETACH:
-        reset_api_hook("crypt32.dll", "I_CryptGetDefaultCryptProv", orig_I_CryptGetDefaultCryptProv);
         unload_cpcsp();
         break;
     }

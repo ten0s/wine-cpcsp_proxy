@@ -39,7 +39,7 @@
 #define SONAME_LIBCAPI20 "/opt/cprocsp/lib/ia32/libcapi20.so"
 #endif
 
-static const char proxy_dll[] = "cpcsp_proxy.dll";
+static const char proxy_dll[] = "cpcsp_proxy.dll.so";
 
 /* CryptoPro uses default calling convention under linux */
 static DWORD (*pCertEnumCertificateContextProperties)(PCCERT_CONTEXT,DWORD);
@@ -91,7 +91,7 @@ static BOOL load_cpcsp(void)
 #define LOAD_FUNCPTR(f) \
     if ((p##f = dlsym(libcapi10, #f)) == NULL) \
     { \
-        printf("%s not found in %s\n", #f, SONAME_LIBCAPI20); \
+        printf("%s not found in %s\n", #f, SONAME_LIBCAPI10); \
         return FALSE; \
     }
     LOAD_FUNCPTR(CryptEnumProvidersA);

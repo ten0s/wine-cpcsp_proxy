@@ -1,8 +1,0 @@
-MODULE	= cpcsp_proxy.dll
-IMPORTS	= kernel32 ntdll
-
-EXTRADLLFLAGS = -mcygwin
-
-C_SRCS = \
-	api_hook.c \
-	proxy.c

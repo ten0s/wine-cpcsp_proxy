@@ -1,24 +1,22 @@
 WINEARCH =
-WINEGCC = winegcc $(WINEARCH)
-CFLAGS	= -g -O2 -fPIC -Wall -D__WINESRC__ -shared
-IMPORTS	= kernel32 ntdll
-LIBS	= $(IMPORTS:%=-l%) -ldl
-DEPS	= Makefile api_hook.h
-OBJ	= api_hook.o proxy.o cpcsp_proxy.spec
+WINEGCC  = winegcc $(WINEARCH)
+CFLAGS   = -g -O2 -fPIC -Wall -D__WINESRC__
+IMPORTS  = kernel32 ntdll
+LIBS     = $(IMPORTS:%=-l%) -ldl
+DEPS     = Makefile cpcsp_proxy.spec
+OBJ      = cpcsp_proxy.o
+WINEPREFIX ?= ~/.wine
 
 %.o: %.c $(DEPS)
-	$(WINEGCC) -c -o $@ $< $(CFLAGS)
+	$(WINEGCC) $(CFLAGS) -c $< -o $@
 
-all: cpcsp_proxy.dll.so cpcsp_proxy.dll
-	
+all: cpcsp_proxy.dll.so
 
-cpcsp_proxy.dll.so: $(OBJ)
-	$(WINEGCC) -o $@ $^ -shared $(CFLAGS) $(LIBS)
-	#ln -s $@ cpcsp_proxy.dll
-	#strip $@
+cpcsp_proxy.dll.so: $(OBJ) cpcsp_proxy.spec
+	$(WINEGCC) $(CFLAGS) -shared $^ $(LIBS) -o $@
 
-cpcsp_proxy.dll: cpcsp_proxy.spec
-	$(WINEGCC) -o $@ -Wb,--fake-module -shared $^ -mno-cygwin
+install: cpcsp_proxy.dll.so
+	cp -f cpcsp_proxy.dll.so $(WINEPREFIX)/drive_c/windows/system32/cpcsp_proxy.dll.so
 
 clean:
-	rm -f *.o *.dll.so
+	rm -f *.o *.dll *.dll.so

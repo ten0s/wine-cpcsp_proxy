@@ -518,10 +518,10 @@ static BOOL register_publickey_converters(HKEY hkey_main)
         const char *oid;
         const char *dll;
         const char *function;
-    } converter_info[] =
+    } info[] =
     {
-        { "1.2.643.2.2.19", proxy_dll, "CryptDllConvertPublicKeyInfo" },
-        { "1.2.643.2.2.98", proxy_dll, "CryptDllConvertPublicKeyInfo" },
+        { "1.2.643.2.2.19"   , proxy_dll, "CryptDllConvertPublicKeyInfo" },
+        { "1.2.643.2.2.98"   , proxy_dll, "CryptDllConvertPublicKeyInfo" },
         { "1.2.643.7.1.1.1.1", proxy_dll, "CryptDllConvertPublicKeyInfo" },
         { "1.2.643.7.1.1.1.2", proxy_dll, "CryptDllConvertPublicKeyInfo" },
         { "1.2.840.10045.2.1", proxy_dll, "CryptDllConvertPublicKeyInfo" },
@@ -529,15 +529,15 @@ static BOOL register_publickey_converters(HKEY hkey_main)
     DWORD i;
     HKEY hkey;
 
-    for (i = 0; i < ARRAY_SIZE(converter_info); i++)
+    for (i = 0; i < ARRAY_SIZE(info); i++)
     {
-        if (RegCreateKeyA(hkey_main, converter_info[i].oid, &hkey))
+        if (RegCreateKeyA(hkey_main, info[i].oid, &hkey))
         {
-            printf("failed to create key %s\n", converter_info[i].oid);
+            printf("failed to create key %s\n", info[i].oid);
             return FALSE;
         }
-        RegSetValueExA(hkey, "Dll", 0, REG_SZ, (BYTE *)converter_info[i].dll, strlen(converter_info[i].dll));
-        RegSetValueExA(hkey, "FuncName", 0, REG_SZ, (BYTE *)converter_info[i].function, strlen(converter_info[i].function));
+        RegSetValueExA(hkey, "Dll", 0, REG_SZ, (BYTE *)info[i].dll, strlen(info[i].dll));
+        RegSetValueExA(hkey, "FuncName", 0, REG_SZ, (BYTE *)info[i].function, strlen(info[i].function));
         RegCloseKey(hkey);
     }
 
@@ -551,10 +551,10 @@ static BOOL register_publickey_encoders(HKEY hkey_main)
         const char *oid;
         const char *dll;
         const char *function;
-    } converter_info[] =
+    } info[] =
     {
-        { "1.2.643.2.2.19", proxy_dll, "CryptDllEncodePublicKeyAndParameters" },
-        { "1.2.643.2.2.98", proxy_dll, "CryptDllEncodePublicKeyAndParameters" },
+        { "1.2.643.2.2.19"   , proxy_dll, "CryptDllEncodePublicKeyAndParameters" },
+        { "1.2.643.2.2.98"   , proxy_dll, "CryptDllEncodePublicKeyAndParameters" },
         { "1.2.643.7.1.1.1.1", proxy_dll, "CryptDllEncodePublicKeyAndParameters" },
         { "1.2.643.7.1.1.1.2", proxy_dll, "CryptDllEncodePublicKeyAndParameters" },
         { "1.2.840.10045.2.1", proxy_dll, "CryptDllEncodePublicKeyAndParameters" },
@@ -562,15 +562,15 @@ static BOOL register_publickey_encoders(HKEY hkey_main)
     DWORD i;
     HKEY hkey;
 
-    for (i = 0; i < ARRAY_SIZE(converter_info); i++)
+    for (i = 0; i < ARRAY_SIZE(info); i++)
     {
-        if (RegCreateKeyA(hkey_main, converter_info[i].oid, &hkey))
+        if (RegCreateKeyA(hkey_main, info[i].oid, &hkey))
         {
-            printf("failed to create key %s\n", converter_info[i].oid);
+            printf("failed to create key %s\n", info[i].oid);
             return FALSE;
         }
-        RegSetValueExA(hkey, "Dll", 0, REG_SZ, (BYTE *)converter_info[i].dll, strlen(converter_info[i].dll));
-        RegSetValueExA(hkey, "FuncName", 0, REG_SZ, (BYTE *)converter_info[i].function, strlen(converter_info[i].function));
+        RegSetValueExA(hkey, "Dll", 0, REG_SZ, (BYTE *)info[i].dll, strlen(info[i].dll));
+        RegSetValueExA(hkey, "FuncName", 0, REG_SZ, (BYTE *)info[i].function, strlen(info[i].function));
         RegCloseKey(hkey);
     }
 
@@ -596,7 +596,6 @@ static void setup_oid_info(void)
     }
     register_publickey_converters(hkey_main);
     RegCloseKey(hkey_main);
-
 
     if (RegCreateKeyA(HKEY_LOCAL_MACHINE, "Software\\Microsoft\\Cryptography\\OID\\EncodingType 1\\CryptDllEncodePublicKeyAndParameters", &hkey_main))
     {

@@ -57,6 +57,12 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpcapi_proxy);
 // sizeof(LONG)  == 4
 // sizeof(WCHAR) == 4
 //
+// Windows WCHAR == wchar_t == uint16_t
+// Linux   WCHAR == wchar_t == uint32_t
+//
+// Therefore, all Windows null-terminated Unicode strings in uint16_t*
+// must be converted to uint32_t* using the dup_uint16_to_uint32 function.
+//
 
 //
 // CryptoPro uses default calling convention on Linux
@@ -479,7 +485,7 @@ HCERTSTORE WINAPI CP_CertOpenStore(LPCSTR lpszStoreProvider,
     if (to_uint32_ptr)
     {
         //
-        // pvPara containing null-terminated uint16_t* Unicode string
+        // pvPara containing null-terminated Unicode string
         // must be converted to uint32_t*.
         // See 'Convertion Notice' at the beginning of the file.
         //

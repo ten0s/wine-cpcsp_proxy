@@ -55,6 +55,12 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpsspi_proxy);
 // sizeof(LONG)  == 4
 // sizeof(WCHAR) == 4
 //
+// Windows WCHAR == wchar_t == uint16_t
+// Linux   WCHAR == wchar_t == uint32_t
+//
+// Therefore, all Windows null-terminated Unicode strings in uint16_t*
+// must be converted to uint32_t* using the dup_uint16_to_uint32 function.
+//
 
 typedef struct {
     uint32_t cbBuffer;
@@ -414,7 +420,7 @@ SECURITY_STATUS WINAPI CP_InitializeSecurityContextW(PCredHandle phCredential,
     //
     // pwszTargetName must be converted to uint32_t*.
     // See 'Convertion Notice' at the beginning of the file.
-    // Fallback to CP_InitializeSecurityContextA.
+    // But easier to fallback to CP_InitializeSecurityContextA.
     //
 
     LPSTR pszTargetName = NULL;

@@ -133,7 +133,7 @@ static BOOL (*pCryptDecodeObjectEx)(
 );
 
 static HCERTSTORE (*pCertOpenStore)(
-    const char *lpszStoreProvider,
+    LPCSTR lpszStoreProvider,
     DWORD dwEncodingType,
     HCRYPTPROV hCryptProv,
     DWORD dwFlags,
@@ -459,18 +459,41 @@ HCERTSTORE WINAPI CP_CertOpenStore(LPCSTR lpszStoreProvider,
     HCERTSTORE ret;
     TRACE("\n");
 
-    //
-    // TODO:
-    //
-    // lpszStoreProvider must be converted to uint32_t*.
-    // See 'Convertion Notice' at the beginning of the file.
-    //
-    
+    void *pvParaUInt32 = NULL;
+    BOOL to_uint32_ptr = FALSE;
+
+#define IS_INTOID(x) (((ULONG_PTR)(x) >> 16) == 0)
+    if (IS_INTOID(lpszStoreProvider))
+    {
+        if (LOWORD(lpszStoreProvider) == LOWORD(CERT_STORE_PROV_SYSTEM))
+        {
+            to_uint32_ptr = TRUE;
+        }
+    }
+    else if (strcmp(lpszStoreProvider, sz_CERT_STORE_PROV_SYSTEM) == 0)
+    {
+        to_uint32_ptr = TRUE;
+    }
+#undef IS_INTOID
+
+    if (to_uint32_ptr)
+    {
+        //
+        // pvPara containing null-terminated uint16_t* Unicode string
+        // must be converted to uint32_t*.
+        // See 'Convertion Notice' at the beginning of the file.
+        //
+        pvParaUInt32 = dup_uint16_to_uint32(pvPara);
+    }
+
     ret = pCertOpenStore(lpszStoreProvider,
                          dwEncodingType,
                          hCryptProv,
                          dwFlags,
-                         pvPara);
+                         pvParaUInt32 ? pvParaUInt32 : pvPara);
+
+    free(pvParaUInt32);
+
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }

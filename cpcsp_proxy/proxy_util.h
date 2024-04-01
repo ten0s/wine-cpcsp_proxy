@@ -22,11 +22,20 @@
 #include <stdint.h>
 
 //
-// Duplicates and converts the given wide string.
+// Duplicates and converts the uint16_t* string
+// to uint32_t* string.
 // If pwszStr is NULL, dup_uint16_to_uint32 ignores
 // the parameter and return NULL.
 // To free the memory, use the free function. 
 // 
 uint32_t *dup_uint16_to_uint32(const uint16_t *pwszStr);
+
+//
+// Converts the given uint32_t* string
+// to uint16_t* string in place.
+// If pwwszStr is NULL, conv_uint32_to_uint16 ignores
+// the parameter and return NULL.
+//
+void conv_uint32_to_uint16(uint32_t *pwwszStr);
 
 #endif // __PROXY_UTIL_H__

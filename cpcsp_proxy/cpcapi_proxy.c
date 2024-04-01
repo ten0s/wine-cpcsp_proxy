@@ -610,10 +610,28 @@ BOOL WINAPI CP_CertGetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
 {
     BOOL ret;
     TRACE("\n");
+
     ret = pCertGetCertificateContextProperty(pCertContext,
                                              dwPropId,
                                              pvData,
                                              pcbData);
+    switch (dwPropId) {
+    case CERT_KEY_PROV_INFO_PROP_ID: {
+        if (pvData) {
+            //
+            // pwszContainerName and pwszProvName must be converted to uint16_t*.
+            // See 'Convertion Notice' at the beginning of the file.
+            //
+            CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;
+            conv_uint32_to_uint16((uint32_t *)pKeyProvInfo->pwszContainerName);
+            conv_uint32_to_uint16((uint32_t *)pKeyProvInfo->pwszProvName);
+        }
+        break;
+    }
+    default:
+        break;
+    }
+
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }
@@ -631,15 +649,17 @@ BOOL WINAPI CP_CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
 
     switch (dwPropId) {
     case CERT_KEY_PROV_INFO_PROP_ID: {
-        //
-        // pwszContainerName and pwszProvName must be converted to uint32_t*.
-        // See 'Convertion Notice' at the beginning of the file.
-        //
-        CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;
-        pwwszContName = dup_uint16_to_uint32(pKeyProvInfo->pwszContainerName);
-        pwwszProvName = dup_uint16_to_uint32(pKeyProvInfo->pwszProvName);
-        pKeyProvInfo->pwszContainerName = (LPWSTR)pwwszContName;
-        pKeyProvInfo->pwszProvName      = (LPWSTR)pwwszProvName;
+        if (pvData) {
+            //
+            // pwszContainerName and pwszProvName must be converted to uint32_t*.
+            // See 'Convertion Notice' at the beginning of the file.
+            //
+            CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;
+            pwwszContName = dup_uint16_to_uint32(pKeyProvInfo->pwszContainerName);
+            pwwszProvName = dup_uint16_to_uint32(pKeyProvInfo->pwszProvName);
+            pKeyProvInfo->pwszContainerName = (uint16_t *)pwwszContName;
+            pKeyProvInfo->pwszProvName      = (uint16_t *)pwwszProvName;
+        }
         break;
     }
     default:

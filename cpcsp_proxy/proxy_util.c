@@ -24,7 +24,7 @@
 uint32_t *dup_uint16_to_uint32(const uint16_t *pwszStr)
 {
     uint32_t *pwwszStr = NULL;
-    
+
     if (pwszStr)
     {
         size_t lenW = lstrlenW(pwszStr) + 1;
@@ -36,4 +36,19 @@ uint32_t *dup_uint16_to_uint32(const uint16_t *pwszStr)
     }
 
     return pwwszStr;
+}
+
+void conv_uint32_to_uint16(uint32_t *pwwszStr)
+{
+    if (!pwwszStr) return;
+
+    uint32_t *src = pwwszStr;
+    uint16_t *dst = (uint16_t *)pwwszStr;
+
+    size_t i = 0;
+    while (src[i]) {
+        dst[i] = (uint16_t)src[i];
+        i++;
+    }
+    dst[i] = 0;
 }

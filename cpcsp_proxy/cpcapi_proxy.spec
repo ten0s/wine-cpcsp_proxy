@@ -11,6 +11,7 @@
 @ stdcall CP_CryptAcquireCertificatePrivateKey(ptr long ptr ptr ptr ptr)
 @ stdcall CP_CryptEncodeObjectEx(long str ptr long ptr ptr ptr)
 @ stdcall CP_CryptDecodeObjectEx(long str ptr long long ptr ptr ptr)
+@ stdcall CP_CryptExportPublicKeyInfo(long long long ptr ptr)
 @ stdcall CP_CertOpenStore(str long long long ptr)
 @ stdcall CP_CertOpenSystemStoreA(long str)
 @ stdcall CP_CertOpenSystemStoreW(long wstr)

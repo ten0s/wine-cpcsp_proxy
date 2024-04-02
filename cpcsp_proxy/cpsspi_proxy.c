@@ -59,7 +59,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpsspi_proxy);
 // Linux   WCHAR == wchar_t == uint32_t
 //
 // Therefore, all Windows null-terminated Unicode strings in uint16_t*
-// must be converted to uint32_t* using the dup_uint16_to_uint32 function.
+// must be converted to uint32_t* using the dup_uint16_to_uint32 function
+// and back using the conv_uint32_to_uint16 function.
 //
 
 typedef struct {

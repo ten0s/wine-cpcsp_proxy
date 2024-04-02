@@ -163,6 +163,12 @@ static BOOL (*pCryptExportPublicKeyInfo)(
     DWORD *pcbInfo
 );
 
+static BOOL (*pCertComparePublicKeyInfo)(
+    DWORD dwCertEncodingType,
+    PCERT_PUBLIC_KEY_INFO pPublicKey1,
+    PCERT_PUBLIC_KEY_INFO pPublicKey2
+);
+
 static HCERTSTORE (*pCertOpenStore)(
     LPCSTR lpszStoreProvider,
     DWORD dwEncodingType,
@@ -302,6 +308,7 @@ static BOOL load_cpcapi20()
     LOAD_FUNCPTR(CryptEncodeObjectEx);
     LOAD_FUNCPTR(CryptDecodeObjectEx);
     LOAD_FUNCPTR(CryptExportPublicKeyInfo);
+    LOAD_FUNCPTR(CertComparePublicKeyInfo);
     LOAD_FUNCPTR(CertOpenStore);
     LOAD_FUNCPTR(CertOpenSystemStoreA);
     LOAD_FUNCPTR(CertOpenSystemStoreW);
@@ -539,6 +546,19 @@ BOOL WINAPI CP_CryptExportPublicKeyInfo(HCRYPTPROV hProv,
                                     dwCertEncodingType,
                                     pInfo,
                                     pcbInfo);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+BOOL WINAPI CP_CertComparePublicKeyInfo(DWORD dwCertEncodingType,
+                                        PCERT_PUBLIC_KEY_INFO pPublicKey1,
+                                        PCERT_PUBLIC_KEY_INFO pPublicKey2)
+{
+    BOOL ret;
+    TRACE("\n");
+    ret = pCertComparePublicKeyInfo(dwCertEncodingType,
+                                    pPublicKey1,
+                                    pPublicKey2);
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }

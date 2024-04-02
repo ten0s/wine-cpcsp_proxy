@@ -621,7 +621,8 @@ BOOL WINAPI CP_CertGetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
         if (pvData) {
             //
             // pwszContainerName and pwszProvName must be converted to uint16_t*.
-            // See 'Convertion Notice' at the beginning of the file.
+            // See 'Convertion Notice' at the beginning of the file and
+            // CP_CertSetCertificateContextProperty.
             //
             CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;
             conv_uint32_to_uint16((uint32_t *)pKeyProvInfo->pwszContainerName);
@@ -653,7 +654,8 @@ BOOL WINAPI CP_CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
         if (pvData) {
             //
             // pwszContainerName and pwszProvName must be converted to uint32_t*.
-            // See 'Convertion Notice' at the beginning of the file.
+            // See 'Convertion Notice' at the beginning of the file and
+            // CP_CertGetCertificateContextProperty
             //
             CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;
             pwwszContName = dup_uint16_to_uint32(pKeyProvInfo->pwszContainerName);

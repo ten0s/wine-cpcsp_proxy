@@ -18,6 +18,7 @@
 @ stdcall CP_CertOpenSystemStoreW(long wstr)
 @ stdcall CP_CertCloseStore(long long)
 @ stdcall CP_CertFindCertificateInStore(long long long long ptr ptr)
+@ stdcall CP_CertDeleteCertificateFromStore(ptr)
 @ stdcall CP_CertGetIssuerCertificateFromStore(long ptr ptr ptr)
 @ stdcall CP_CertCreateCertificateContext(long ptr long)
 @ stdcall CP_CertDuplicateCertificateContext(ptr)

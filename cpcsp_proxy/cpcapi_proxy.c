@@ -201,6 +201,10 @@ static PCCERT_CONTEXT (*pCertFindCertificateInStore)(
     PCCERT_CONTEXT pPrevCertContext
 );
 
+static BOOL (*pCertDeleteCertificateFromStore)(
+    PCCERT_CONTEXT pCertContext
+);
+
 static PCCERT_CONTEXT (*pCertGetIssuerCertificateFromStore)(
     HCERTSTORE hCertStore,
     PCCERT_CONTEXT pSubjectContext,
@@ -314,6 +318,7 @@ static BOOL load_cpcapi20()
     LOAD_FUNCPTR(CertOpenSystemStoreW);
     LOAD_FUNCPTR(CertCloseStore);
     LOAD_FUNCPTR(CertFindCertificateInStore);
+    LOAD_FUNCPTR(CertDeleteCertificateFromStore);
     LOAD_FUNCPTR(CertGetIssuerCertificateFromStore);
     LOAD_FUNCPTR(CertCreateCertificateContext);
     LOAD_FUNCPTR(CertDuplicateCertificateContext);
@@ -669,6 +674,15 @@ PCCERT_CONTEXT WINAPI CP_CertFindCertificateInStore(HCERTSTORE hCertStore,
                                       dwFindType,
                                       pvFindPara,
                                       pPrevCertContext);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+BOOL WINAPI CP_CertDeleteCertificateFromStore(PCCERT_CONTEXT pCertContext)
+{
+    BOOL ret;
+    TRACE("\n");
+    ret = pCertDeleteCertificateFromStore(pCertContext);
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }

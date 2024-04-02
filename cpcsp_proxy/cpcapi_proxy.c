@@ -73,6 +73,22 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpcapi_proxy);
 // CAPI10
 //
 
+static BOOL (*pCryptAcquireContextA)(
+    HCRYPTPROV *phProv,
+    const char *szContName,
+    const char *szProvName,
+    DWORD dwProvType,
+    DWORD dwFlags
+);
+
+static BOOL (*pCryptAcquireContextW)(
+    HCRYPTPROV *phProv,
+    const uint32_t *wwszContName,
+    const uint32_t *wwszProvName,
+    DWORD dwProvType,
+    DWORD dwFlags
+);
+
 static BOOL (*pCryptGetProvParam)(
     HCRYPTPROV hProv,
     DWORD dwParam,
@@ -246,6 +262,8 @@ static BOOL load_cpcapi10()
         libcapi10 = NULL; \
         return FALSE; \
     }
+    LOAD_FUNCPTR(CryptAcquireContextA);
+    LOAD_FUNCPTR(CryptAcquireContextW);
     LOAD_FUNCPTR(CryptGetProvParam);
     LOAD_FUNCPTR(CryptSetProvParam);
     LOAD_FUNCPTR(CryptGetUserKey);
@@ -327,6 +345,48 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved)
 //
 // CAPI10
 //
+
+BOOL WINAPI CP_CryptAcquireContextA(HCRYPTPROV *phProv,
+                                    LPCSTR szContName,
+                                    LPCSTR szProvName,
+                                    DWORD dwProvType,
+                                    DWORD dwFlags)
+{
+    BOOL ret;
+    TRACE("\n");
+    ret = pCryptAcquireContextA(phProv,
+                                szContName,
+                                szProvName,
+                                dwProvType,
+                                dwFlags);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+BOOL WINAPI CP_CryptAcquireContextW(HCRYPTPROV *phProv,
+                                    LPCWSTR wszContName,
+                                    LPCWSTR wszProvName,
+                                    DWORD dwProvType,
+                                    DWORD dwFlags)
+{
+    BOOL ret;
+    TRACE("\n");
+
+    uint32_t *wwszContName = dup_uint16_to_uint32(wszContName);
+    uint32_t *wwszProvName = dup_uint16_to_uint32(wszProvName);
+
+    ret = pCryptAcquireContextW(phProv,
+                                wwszContName,
+                                wwszProvName,
+                                dwProvType,
+                                dwFlags);
+
+    free(wwszContName);
+    free(wwszProvName);
+
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
 
 BOOL WINAPI CP_CryptGetProvParam(HCRYPTPROV hProv,
                                  DWORD dwParam,
@@ -646,8 +706,8 @@ BOOL WINAPI CP_CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
     BOOL ret;
     TRACE("\n");
 
-    uint32_t *pwwszContName = NULL;
-    uint32_t *pwwszProvName = NULL;
+    uint32_t *wwszContName = NULL;
+    uint32_t *wwszProvName = NULL;
 
     switch (dwPropId) {
     case CERT_KEY_PROV_INFO_PROP_ID: {
@@ -658,10 +718,10 @@ BOOL WINAPI CP_CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
             // CP_CertGetCertificateContextProperty
             //
             CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;
-            pwwszContName = dup_uint16_to_uint32(pKeyProvInfo->pwszContainerName);
-            pwwszProvName = dup_uint16_to_uint32(pKeyProvInfo->pwszProvName);
-            pKeyProvInfo->pwszContainerName = (uint16_t *)pwwszContName;
-            pKeyProvInfo->pwszProvName      = (uint16_t *)pwwszProvName;
+            wwszContName = dup_uint16_to_uint32(pKeyProvInfo->pwszContainerName);
+            wwszProvName = dup_uint16_to_uint32(pKeyProvInfo->pwszProvName);
+            pKeyProvInfo->pwszContainerName = (uint16_t *)wwszContName;
+            pKeyProvInfo->pwszProvName      = (uint16_t *)wwszProvName;
         }
         break;
     }
@@ -674,8 +734,8 @@ BOOL WINAPI CP_CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
                                              dwFlags,
                                              pvData);
 
-    free(pwwszContName);
-    free(pwwszProvName);
+    free(wwszContName);
+    free(wwszProvName);
 
     if (!ret) SetLastError(pGetLastError());
     return ret;

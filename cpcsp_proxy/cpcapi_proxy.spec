@@ -1,4 +1,6 @@
 # capi10
+@ stdcall CP_CryptAcquireContextA(ptr str str long long)
+@ stdcall CP_CryptAcquireContextW(ptr wstr wstr long long)
 @ stdcall CP_CryptGetProvParam(long long ptr ptr long)
 @ stdcall CP_CryptSetProvParam(long long ptr long)
 @ stdcall CP_CryptGetUserKey(long long ptr)

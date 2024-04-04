@@ -192,6 +192,11 @@ static BOOL (*pCertCloseStore)(
     DWORD dwFlags
 );
 
+static PCCERT_CONTEXT (*pCertEnumCertificatesInStore)(
+    HCERTSTORE hCertStore,
+    PCCERT_CONTEXT pPrevCertContext
+);
+
 static PCCERT_CONTEXT (*pCertFindCertificateInStore)(
     HCERTSTORE hCertStore,
     DWORD dwCertEncodingType,
@@ -317,6 +322,7 @@ static BOOL load_cpcapi20()
     LOAD_FUNCPTR(CertOpenSystemStoreA);
     LOAD_FUNCPTR(CertOpenSystemStoreW);
     LOAD_FUNCPTR(CertCloseStore);
+    LOAD_FUNCPTR(CertEnumCertificatesInStore);
     LOAD_FUNCPTR(CertFindCertificateInStore);
     LOAD_FUNCPTR(CertDeleteCertificateFromStore);
     LOAD_FUNCPTR(CertGetIssuerCertificateFromStore);
@@ -655,6 +661,17 @@ BOOL WINAPI CP_CertCloseStore(HCERTSTORE hCertStore,
     BOOL ret;
     TRACE("\n");
     ret = pCertCloseStore(hCertStore, dwFlags);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+PCCERT_CONTEXT WINAPI CP_CertEnumCertificatesInStore(HCERTSTORE hCertStore,
+                                                     PCCERT_CONTEXT pPrevCertContext)
+{
+    PCCERT_CONTEXT ret;
+    TRACE("\n");
+    ret = pCertEnumCertificatesInStore(hCertStore,
+                                       pPrevCertContext);
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }

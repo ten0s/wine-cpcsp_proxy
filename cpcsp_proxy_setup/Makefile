@@ -14,5 +14,8 @@ all: cpcsp_proxy_setup.exe
 cpcsp_proxy_setup.exe: $(OBJ)
 	$(WINEGCC) $(CFLAGS) $^ -mconsole -municode $(LIBS) -o $@
 
+install: cpcsp_proxy_setup.exe
+	./cpcsp_proxy_setup.exe
+
 clean:
 	rm -f *.o *.exe *.exe.so

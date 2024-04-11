@@ -3,15 +3,11 @@ WINEGCC  = winegcc $(WINEARCH)
 CFLAGS	 = -g -fPIC -O0 -Wall -D__WINESRC__
 IMPORTS	 = advapi32 crypt32 kernel32 ntdll
 LIBS	 = $(IMPORTS:%=-l%) -ldl
-OBJ	     = cpcsp_proxy_setup.o
 DEPS	 = Makefile
-
-%.o: %.c $(DEPS)
-	$(WINEGCC) $(CFLAGS) -c $< -o $@
 
 all: cpcsp_proxy_setup.exe
 
-cpcsp_proxy_setup.exe: $(OBJ)
+cpcsp_proxy_setup.exe: cpcsp_proxy_setup.c ../lib/cpcapi.c ../lib/cpconv.c
 	$(WINEGCC) $(CFLAGS) $^ -mconsole $(LIBS) -o $@
 
 install: cpcsp_proxy_setup.exe

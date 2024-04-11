@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 Dmitry Timoshkov for Etersoft
+ * Copyright (C) 2019 Dmitry Timoshkov (for Etersoft)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -76,4 +76,3 @@ static const char *propid_to_name(DWORD propid)
 
     return "unknown";
 }
-

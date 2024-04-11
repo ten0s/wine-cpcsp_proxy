@@ -1,5 +1,6 @@
 /*
- * Copyright 2018 Dmitry Timoshkov (for Etersoft)
+ * Copyright (C) 2018 Dmitry Timoshkov (for Etersoft)
+ * Copyright (C) 2024 Dmitry Klionsky (for Security Code)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public

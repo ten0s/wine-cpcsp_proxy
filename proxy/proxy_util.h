@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 Dmitry Klionsky (for Security Code)
+ * Copyright (C) 2024 Dmitry Klionsky (for Security Code)
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -26,8 +26,8 @@
 // to uint32_t* string.
 // If pwszStr is NULL, dup_uint16_to_uint32 ignores
 // the parameter and return NULL.
-// To free the memory, use the free function. 
-// 
+// To free the memory, use the free function.
+//
 uint32_t *dup_uint16_to_uint32(const uint16_t *pwszStr);
 
 //

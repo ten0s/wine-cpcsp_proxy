@@ -28,7 +28,7 @@
 // Wine
 #include <wine/debug.h>
 
-#include "proxy_util.h"
+#include "../lib/cpconv.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(cpsspi_proxy);
 
@@ -40,27 +40,6 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpsspi_proxy);
 
 //
 // _WIN64 only!
-//
-
-//
-// Convertion Notice
-//
-// Windows
-//
-// sizeof(LONG)  == 2
-// sizeof(WCHAR) == 2
-//
-// Linux
-//
-// sizeof(LONG)  == 4
-// sizeof(WCHAR) == 4
-//
-// Windows WCHAR == wchar_t == uint16_t
-// Linux   WCHAR == wchar_t == uint32_t
-//
-// Therefore, all Windows null-terminated Unicode strings in uint16_t*
-// must be converted to uint32_t* using the dup_uint16_to_uint32 function
-// and back using the conv_uint32_to_uint16 function.
 //
 
 typedef struct {
@@ -119,8 +98,8 @@ static SECURITY_STATUS (*pCPAcquireCredentialsHandleA)(
 );
 
 static SECURITY_STATUS (*pCPAcquireCredentialsHandleW)(
-    uint32_t *pwszPrincipal,
-    uint32_t *pwszPackage,
+    wchar4_t *pwszPrincipal,
+    wchar4_t *pwszPackage,
     unsigned long fCredentialUse,
     PLUID pvLogonID,
     PVOID pAuthData,
@@ -152,7 +131,7 @@ static SECURITY_STATUS (*pInitializeSecurityContextA)(
 static SECURITY_STATUS (*pInitializeSecurityContextW)(
     PCredHandle phCredential,
     PCtxtHandle phContext,
-    uint32_t *pwszTargetName,
+    wchar4_t *pwszTargetName,
     unsigned long fContextReq,
     unsigned long Reserved1,
     unsigned long TargetDataRep,
@@ -301,12 +280,12 @@ SECURITY_STATUS WINAPI CP_AcquireCredentialsHandleW(
     TRACE("\n");
 
     //
-    // pwszPrincipal and pwszPackage must be converted to uint32_t*.
-    // See 'Convertion Notice' at the beginning of the file.
+    // pwszPrincipal and pwszPackage must be converted to wchar4_t*.
+    // See 'Convertion Notice' lib/cpconv.h.
     //
 
-    uint32_t *pwwszPrincipal = dup_uint16_to_uint32(pwszPrincipal);
-    uint32_t *pwwszPackage   = dup_uint16_to_uint32(pwszPackage);
+    wchar4_t *pwwszPrincipal = dup_uint16_to_uint32(pwszPrincipal);
+    wchar4_t *pwwszPackage   = dup_uint16_to_uint32(pwszPackage);
 
     ret = pCPAcquireCredentialsHandleW(
         pwwszPrincipal,
@@ -419,8 +398,8 @@ SECURITY_STATUS WINAPI CP_InitializeSecurityContextW(PCredHandle phCredential,
     TRACE("pwszTargetName=%s\n", debugstr_w(pwszTargetName));
 
     //
-    // pwszTargetName must be converted to uint32_t*.
-    // See 'Convertion Notice' at the beginning of the file.
+    // pwszTargetName must be converted to wchar4_t*.
+    // See 'Convertion Notice' lib/cpconv.h.
     // But easier to fallback to CP_InitializeSecurityContextA.
     //
 

@@ -28,7 +28,7 @@
 // Wine
 #include <wine/debug.h>
 
-#include "proxy_util.h"
+#include "../lib/cpconv.h"
 
 WINE_DEFAULT_DEBUG_CHANNEL(cpcapi_proxy);
 
@@ -42,27 +42,6 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpcapi_proxy);
 
 //
 // _WIN64 only!
-//
-
-//
-// Convertion Notice
-//
-// Windows
-//
-// sizeof(LONG)  == 2
-// sizeof(WCHAR) == 2
-//
-// Linux
-//
-// sizeof(LONG)  == 4
-// sizeof(WCHAR) == 4
-//
-// Windows WCHAR == wchar_t == uint16_t
-// Linux   WCHAR == wchar_t == uint32_t
-//
-// Therefore, all Windows null-terminated Unicode strings in uint16_t*
-// must be converted to uint32_t* using the dup_uint16_to_uint32 function
-// and back using the conv_uint32_to_uint16 function.
 //
 
 //
@@ -92,8 +71,8 @@ static BOOL (*pCryptAcquireContextA)(
 
 static BOOL (*pCryptAcquireContextW)(
     HCRYPTPROV *phProv,
-    const uint32_t *wwszContName,
-    const uint32_t *wwszProvName,
+    const wchar4_t *wwszContName,
+    const wchar4_t *wwszProvName,
     DWORD dwProvType,
     DWORD dwFlags
 );
@@ -209,7 +188,7 @@ static HCERTSTORE (*pCertOpenSystemStoreA)(
 
 static HCERTSTORE (*pCertOpenSystemStoreW)(
     HCRYPTPROV hProv,
-    const uint32_t *wszSubsystemProtocol
+    const wchar4_t *wszSubsystemProtocol
 );
 
 static BOOL (*pCertControlStore)(
@@ -460,8 +439,8 @@ BOOL WINAPI CP_CryptAcquireContextW(HCRYPTPROV *phProv,
     BOOL ret;
     TRACE("\n");
 
-    uint32_t *wwszContName = dup_uint16_to_uint32(wszContName);
-    uint32_t *wwszProvName = dup_uint16_to_uint32(wszProvName);
+    wchar4_t *wwszContName = dup_uint16_to_uint32(wszContName);
+    wchar4_t *wwszProvName = dup_uint16_to_uint32(wszProvName);
 
     ret = pCryptAcquireContextW(phProv,
                                 wwszContName,
@@ -556,7 +535,7 @@ static BOOL /*WINAPI*/ EnumOIDInfo(const CPro_OID_INFO *info, void *arg)
 
     //
     // pwszName must be converted to wchar2_t*.
-    // See 'Convertion Notice' at the beginning of the file.
+    // See 'Convertion Notice' in lib/cpconv.h.
     //
     wchar4_t *pwwszName = wc4sdup((wchar4_t *)info->pwszName);
     wchar2_t *pwszName = (wchar2_t *)pwwszName;
@@ -738,8 +717,8 @@ HCERTSTORE WINAPI CP_CertOpenStore(LPCSTR lpszStoreProvider,
     {
         //
         // pvPara containing null-terminated Unicode string
-        // must be converted to uint32_t*.
-        // See 'Convertion Notice' at the beginning of the file.
+        // must be converted to wchar4_t*.
+        // See 'Convertion Notice' lib/cpconv.h.
         //
         pvParaUInt32 = dup_uint16_to_uint32(pvPara);
     }
@@ -775,11 +754,11 @@ HCERTSTORE WINAPI CP_CertOpenSystemStoreW(HCRYPTPROV hProv,
     TRACE("\n");
 
     //
-    // wszSubsystemProtocol must be converted to uint32_t*.
-    // See 'Convertion Notice' at the beginning of the file.
+    // wszSubsystemProtocol must be converted to wchar4_t*.
+    // See 'Convertion Notice' lib/cpconv.h.
     //
 
-    uint32_t *wwszSubsystemProtocol = dup_uint16_to_uint32(wszSubsystemProtocol);
+    wchar4_t *wwszSubsystemProtocol = dup_uint16_to_uint32(wszSubsystemProtocol);
 
     ret = pCertOpenSystemStoreW(hProv, wwszSubsystemProtocol);
 
@@ -918,12 +897,12 @@ BOOL WINAPI CP_CertGetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
         if (pvData) {
             //
             // pwszContainerName and pwszProvName must be converted to uint16_t*.
-            // See 'Convertion Notice' at the beginning of the file and
+            // See 'Convertion Notice' lib/cpconv.h and
             // CP_CertSetCertificateContextProperty.
             //
             CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;
-            conv_uint32_to_uint16((uint32_t *)pKeyProvInfo->pwszContainerName);
-            conv_uint32_to_uint16((uint32_t *)pKeyProvInfo->pwszProvName);
+            conv_uint32_to_uint16((wchar4_t *)pKeyProvInfo->pwszContainerName);
+            conv_uint32_to_uint16((wchar4_t *)pKeyProvInfo->pwszProvName);
         }
         break;
     }
@@ -943,15 +922,15 @@ BOOL WINAPI CP_CertSetCertificateContextProperty(PCCERT_CONTEXT pCertContext,
     BOOL ret;
     TRACE("\n");
 
-    uint32_t *wwszContName = NULL;
-    uint32_t *wwszProvName = NULL;
+    wchar4_t *wwszContName = NULL;
+    wchar4_t *wwszProvName = NULL;
 
     switch (dwPropId) {
     case CERT_KEY_PROV_INFO_PROP_ID: {
         if (pvData) {
             //
-            // pwszContainerName and pwszProvName must be converted to uint32_t*.
-            // See 'Convertion Notice' at the beginning of the file and
+            // pwszContainerName and pwszProvName must be converted to wchar4_t*.
+            // See 'Convertion Notice' lib/cpconv.h and
             // CP_CertGetCertificateContextProperty
             //
             CRYPT_KEY_PROV_INFO *pKeyProvInfo = (CRYPT_KEY_PROV_INFO *)pvData;

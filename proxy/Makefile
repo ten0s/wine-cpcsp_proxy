@@ -10,10 +10,10 @@ all: cpcsp_proxy.dll.so cpsspi_proxy.dll.so cpcapi_proxy.dll.so
 cpcsp_proxy.dll.so: cpcsp_proxy.c cpcsp_proxy.spec
 	$(WINEGCC) $(CFLAGS) -shared $^ $(LIBS) -o $@
 
-cpsspi_proxy.dll.so: cpsspi_proxy.c cpsspi_proxy.spec proxy_util.c
+cpsspi_proxy.dll.so: cpsspi_proxy.c cpsspi_proxy.spec ../lib/cpconv.c
 	$(WINEGCC) $(CFLAGS) -shared $^ $(LIBS) -o $@
 
-cpcapi_proxy.dll.so: cpcapi_proxy.c cpcapi_proxy.spec proxy_util.c
+cpcapi_proxy.dll.so: cpcapi_proxy.c cpcapi_proxy.spec ../lib/cpconv.c
 	$(WINEGCC) $(CFLAGS) -shared $^ $(LIBS) -o $@
 
 install: cpcsp_proxy.dll.so

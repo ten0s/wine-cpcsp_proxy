@@ -1,4 +1,5 @@
 # capi10
+@ stdcall CP_CryptEnumProvidersA(long ptr long ptr str ptr)
 @ stdcall CP_CryptAcquireContextA(ptr str str long long)
 @ stdcall CP_CryptAcquireContextW(ptr wstr wstr long long)
 @ stdcall CP_CryptGetProvParam(long long ptr ptr long)

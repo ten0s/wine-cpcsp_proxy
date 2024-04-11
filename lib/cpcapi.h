@@ -26,6 +26,16 @@
     #define CP_CAPI_SPEC extern
 #endif
 
+typedef BOOL (__stdcall *CP_CryptEnumProvidersA_t)(
+    DWORD dwIndex,
+    DWORD *pdwReserved,
+    DWORD dwFlags,
+    DWORD *pdwProvType,
+    LPSTR szProvName,
+    DWORD *pcbProvName
+);
+CP_CAPI_SPEC CP_CryptEnumProvidersA_t CP_CryptEnumProvidersA;
+
 typedef BOOL (__stdcall *CP_CryptAcquireContextA_t)(
     HCRYPTPROV *phProv,
     LPCSTR szContName,

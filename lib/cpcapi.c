@@ -47,6 +47,7 @@ BOOL CP_CAPI_Init()
     //
     // CAPI10
     //
+    LOAD_FUNCPTR(CP_CryptEnumProvidersA);
     LOAD_FUNCPTR(CP_CryptAcquireContextA);
     LOAD_FUNCPTR(CP_CryptAcquireContextW);
     LOAD_FUNCPTR(CP_CryptGetProvParam);

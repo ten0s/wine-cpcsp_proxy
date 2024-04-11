@@ -73,6 +73,15 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpcapi_proxy);
 // CAPI10
 //
 
+static BOOL (*pCryptEnumProvidersA)(
+    DWORD dwIndex,
+    DWORD *pdwReserved,
+    DWORD dwFlags,
+    DWORD *pdwProvType,
+    LPSTR szProvName,
+    DWORD *pcbProvName
+);
+
 static BOOL (*pCryptAcquireContextA)(
     HCRYPTPROV *phProv,
     const char *szContName,
@@ -306,6 +315,7 @@ static BOOL load_cpcapi10()
         libcapi10 = NULL; \
         return FALSE; \
     }
+    LOAD_FUNCPTR(CryptEnumProvidersA);
     LOAD_FUNCPTR(CryptAcquireContextA);
     LOAD_FUNCPTR(CryptAcquireContextW);
     LOAD_FUNCPTR(CryptGetProvParam);
@@ -396,6 +406,25 @@ BOOL WINAPI DllMain(HINSTANCE hinst, DWORD reason, LPVOID reserved)
 //
 // CAPI10
 //
+
+BOOL WINAPI CP_CryptEnumProvidersA(DWORD dwIndex,
+                                   DWORD *pdwReserved,
+                                   DWORD dwFlags,
+                                   DWORD *pdwProvType,
+                                   LPSTR szProvName,
+                                   DWORD *pcbProvName)
+{
+    BOOL ret;
+    TRACE("\n");
+    ret = pCryptEnumProvidersA(dwIndex,
+                               pdwReserved,
+                               dwFlags,
+                               pdwProvType,
+                               szProvName,
+                               pcbProvName);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
 
 BOOL WINAPI CP_CryptAcquireContextA(HCRYPTPROV *phProv,
                                     LPCSTR szContName,

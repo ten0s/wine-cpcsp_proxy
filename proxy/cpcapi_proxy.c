@@ -227,6 +227,11 @@ static PCCERT_CONTEXT (*pCertDuplicateCertificateContext)(
     PCCERT_CONTEXT pCertContext
 );
 
+static DWORD (*pCertEnumCertificateContextProperties)(
+    PCCERT_CONTEXT pCertContext,
+    DWORD dwPropId
+);
+
 static BOOL (*pCertGetCertificateContextProperty)(
     PCCERT_CONTEXT pCertContext,
     DWORD dwPropId,
@@ -328,6 +333,7 @@ static BOOL load_cpcapi20()
     LOAD_FUNCPTR(CertGetIssuerCertificateFromStore);
     LOAD_FUNCPTR(CertCreateCertificateContext);
     LOAD_FUNCPTR(CertDuplicateCertificateContext);
+    LOAD_FUNCPTR(CertEnumCertificateContextProperties);
     LOAD_FUNCPTR(CertGetCertificateContextProperty);
     LOAD_FUNCPTR(CertSetCertificateContextProperty);
     LOAD_FUNCPTR(CertAddCertificateContextToStore);
@@ -737,6 +743,17 @@ PCCERT_CONTEXT WINAPI CP_CertDuplicateCertificateContext(PCCERT_CONTEXT pCertCon
     PCCERT_CONTEXT ret;
     TRACE("\n");
     ret = pCertDuplicateCertificateContext(pCertContext);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+DWORD WINAPI CP_CertEnumCertificateContextProperties(PCCERT_CONTEXT pCertContext,
+                                                     DWORD dwPropId)
+{
+    DWORD ret;
+    TRACE("\n");
+    ret = pCertEnumCertificateContextProperties(pCertContext,
+                                                dwPropId);
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }

@@ -23,6 +23,7 @@
 @ stdcall CP_CertGetIssuerCertificateFromStore(long ptr ptr ptr)
 @ stdcall CP_CertCreateCertificateContext(long ptr long)
 @ stdcall CP_CertDuplicateCertificateContext(ptr)
+@ stdcall CP_CertEnumCertificateContextProperties(ptr long)
 @ stdcall CP_CertGetCertificateContextProperty(ptr long ptr ptr)
 @ stdcall CP_CertSetCertificateContextProperty(ptr long long ptr)
 @ stdcall CP_CertAddCertificateContextToStore(long ptr long ptr)

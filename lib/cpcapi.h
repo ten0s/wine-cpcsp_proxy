@@ -198,6 +198,12 @@ typedef PCCERT_CONTEXT (__stdcall *CP_CertDuplicateCertificateContext_t)(
 );
 CP_CAPI_SPEC CP_CertDuplicateCertificateContext_t CP_CertDuplicateCertificateContext;
 
+typedef DWORD (__stdcall *CP_CertEnumCertificateContextProperties_t)(
+    PCCERT_CONTEXT pCertContext,
+    DWORD dwPropId
+);
+CP_CAPI_SPEC CP_CertEnumCertificateContextProperties_t CP_CertEnumCertificateContextProperties;
+
 typedef BOOL (__stdcall *CP_CertGetCertificateContextProperty_t)(
     PCCERT_CONTEXT pCertContext,
     DWORD dwPropId,

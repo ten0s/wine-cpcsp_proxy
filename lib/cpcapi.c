@@ -73,6 +73,7 @@ BOOL CP_CAPI_Init()
     LOAD_FUNCPTR(CP_CertGetIssuerCertificateFromStore);
     LOAD_FUNCPTR(CP_CertCreateCertificateContext);
     LOAD_FUNCPTR(CP_CertDuplicateCertificateContext);
+    LOAD_FUNCPTR(CP_CertEnumCertificateContextProperties);
     LOAD_FUNCPTR(CP_CertGetCertificateContextProperty);
     LOAD_FUNCPTR(CP_CertSetCertificateContextProperty);
     LOAD_FUNCPTR(CP_CertAddCertificateContextToStore);

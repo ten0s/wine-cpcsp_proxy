@@ -1,4 +1,4 @@
-SUBDIRS = cpcsp_proxy cpcsp_proxy_setup
+SUBDIRS = proxy setup
 
 all:
 	@for subdir in $(SUBDIRS); do \

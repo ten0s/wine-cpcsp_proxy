@@ -1,6 +1,6 @@
 WINEARCH =
 WINEGCC  = winegcc $(WINEARCH)
-CFLAGS	 = -g -fPIC -O2 -Wall -D__WINESRC__
+CFLAGS	 = -g -fPIC -O0 -Wall -D__WINESRC__
 IMPORTS	 = advapi32 crypt32 kernel32 ntdll
 LIBS	 = $(IMPORTS:%=-l%) -ldl
 OBJ	     = cpcsp_proxy_setup.o

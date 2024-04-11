@@ -1,6 +1,6 @@
 WINEARCH =
 WINEGCC  = winegcc $(WINEARCH)
-CFLAGS   = -g -O2 -fPIC -Wall -D__WINESRC__
+CFLAGS   = -g -O0 -fPIC -Wall -D__WINESRC__
 IMPORTS  = kernel32 ntdll
 LIBS     = $(IMPORTS:%=-l%) -ldl
 WINEPREFIX ?= ~/.wine

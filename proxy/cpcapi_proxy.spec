@@ -17,6 +17,7 @@
 @ stdcall CP_CertOpenStore(str long long long ptr)
 @ stdcall CP_CertOpenSystemStoreA(long str)
 @ stdcall CP_CertOpenSystemStoreW(long wstr)
+@ stdcall CP_CertControlStore(long long long ptr)
 @ stdcall CP_CertCloseStore(long long)
 @ stdcall CP_CertEnumCertificatesInStore(long ptr)
 @ stdcall CP_CertFindCertificateInStore(long long long long ptr ptr)

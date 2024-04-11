@@ -67,6 +67,7 @@ BOOL CP_CAPI_Init()
     LOAD_FUNCPTR(CP_CertOpenStore);
     LOAD_FUNCPTR(CP_CertOpenSystemStoreA);
     LOAD_FUNCPTR(CP_CertOpenSystemStoreW);
+    LOAD_FUNCPTR(CP_CertControlStore);
     LOAD_FUNCPTR(CP_CertCloseStore);
     LOAD_FUNCPTR(CP_CertEnumCertificatesInStore);
     LOAD_FUNCPTR(CP_CertFindCertificateInStore);

@@ -161,6 +161,14 @@ typedef HCERTSTORE (__stdcall *CP_CertOpenSystemStoreW_t)(
 );
 CP_CAPI_SPEC CP_CertOpenSystemStoreW_t CP_CertOpenSystemStoreW;
 
+typedef BOOL (__stdcall *CP_CertControlStore_t)(
+    HCERTSTORE hCertStore,
+    DWORD dwFlags,
+    DWORD dwCtrlType,
+    void const *pvCtrlPara
+);
+CP_CAPI_SPEC CP_CertControlStore_t CP_CertControlStore;
+
 typedef BOOL (__stdcall *CP_CertCloseStore_t)(
     HCERTSTORE hCertStore,
     DWORD dwFlags

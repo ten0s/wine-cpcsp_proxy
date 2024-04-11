@@ -196,6 +196,13 @@ static HCERTSTORE (*pCertOpenSystemStoreW)(
     const uint32_t *wszSubsystemProtocol
 );
 
+static BOOL (*pCertControlStore)(
+    HCERTSTORE hCertStore,
+    DWORD dwFlags,
+    DWORD dwCtrlType,
+    void const *pvCtrlPara
+);
+
 static BOOL (*pCertCloseStore)(
     HCERTSTORE hCertStore,
     DWORD dwFlags
@@ -336,6 +343,7 @@ static BOOL load_cpcapi20()
     LOAD_FUNCPTR(CertOpenStore);
     LOAD_FUNCPTR(CertOpenSystemStoreA);
     LOAD_FUNCPTR(CertOpenSystemStoreW);
+    LOAD_FUNCPTR(CertControlStore);
     LOAD_FUNCPTR(CertCloseStore);
     LOAD_FUNCPTR(CertEnumCertificatesInStore);
     LOAD_FUNCPTR(CertFindCertificateInStore);
@@ -685,6 +693,21 @@ HCERTSTORE WINAPI CP_CertOpenSystemStoreW(HCRYPTPROV hProv,
 
     free(wwszSubsystemProtocol);
 
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+BOOL WINAPI CP_CertControlStore(HCERTSTORE hCertStore,
+                                DWORD dwFlags,
+                                DWORD dwCtrlType,
+                                void const *pvCtrlPara)
+{
+    BOOL ret;
+    TRACE("\n");
+    ret = pCertControlStore(hCertStore,
+                            dwFlags,
+                            dwCtrlType,
+                            pvCtrlPara);
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }

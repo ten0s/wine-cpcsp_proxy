@@ -128,6 +128,13 @@ static BOOL (*pCryptReleaseContext)(
     DWORD dwFlags
 );
 
+static BOOL (*pCryptEnumOIDInfo)(
+    DWORD dwGroupId,
+    DWORD dwFlags,
+    void *pvArg,
+    PFN_CRYPT_ENUM_OID_INFO pfnEnumOIDInfo
+);
+
 static BOOL (*pGetLastError)();
 
 //
@@ -323,6 +330,7 @@ static BOOL load_cpcapi10()
     LOAD_FUNCPTR(CryptGetUserKey);
     LOAD_FUNCPTR(CryptDestroyKey);
     LOAD_FUNCPTR(CryptReleaseContext);
+    LOAD_FUNCPTR(CryptEnumOIDInfo);
     LOAD_FUNCPTR(GetLastError);
 #undef LOAD_FUNCPTR
 
@@ -526,6 +534,61 @@ BOOL WINAPI CP_CryptReleaseContext(HCRYPTPROV hProv,
     BOOL ret;
     TRACE("\n");
     ret = pCryptReleaseContext(hProv, dwFlags);
+    if (!ret) SetLastError(pGetLastError());
+    return ret;
+}
+
+typedef struct {
+    DWORD     cbSize;
+    wchar2_t *pszOID;
+    wchar4_t *pwszName;
+    DWORD     dwGroupId;
+    ALG_ID    Algid;
+    CRYPT_DATA_BLOB ExtraInfo;
+} CPro_OID_INFO;
+
+// Crypto Pro implementation of CryptEnumOIDInfo is broken,
+// it doesn't use WINAPI for a callback.
+static PFN_CRYPT_ENUM_OID_INFO g_pfnEnumOIDInfo;
+static BOOL /*WINAPI*/ EnumOIDInfo(const CPro_OID_INFO *info, void *arg)
+{
+    if (!g_pfnEnumOIDInfo) return FALSE;
+
+    //
+    // pwszName must be converted to wchar2_t*.
+    // See 'Convertion Notice' at the beginning of the file.
+    //
+    wchar4_t *pwwszName = wc4sdup((wchar4_t *)info->pwszName);
+    wchar2_t *pwszName = (wchar2_t *)pwwszName;
+    conv_uint32_to_uint16(pwwszName);
+
+    CRYPT_OID_INFO winInfo = {0};
+    memcpy(&winInfo, info, sizeof(*info));
+    winInfo.pwszName = pwszName;
+
+    BOOL ret = g_pfnEnumOIDInfo(&winInfo, arg);
+
+    free(pwszName);
+
+    return ret;
+}
+
+BOOL WINAPI CP_CryptEnumOIDInfo(DWORD dwGroupId,
+                                DWORD dwFlags,
+                                void *pvArg,
+                                PFN_CRYPT_ENUM_OID_INFO pfnEnumOIDInfo)
+{
+    BOOL ret;
+    TRACE("\n");
+
+    // TODO: Add mutex here.
+    g_pfnEnumOIDInfo = pfnEnumOIDInfo;
+    ret = pCryptEnumOIDInfo(dwGroupId,
+                            dwFlags,
+                            pvArg,
+                            (PFN_CRYPT_ENUM_OID_INFO)EnumOIDInfo);
+    g_pfnEnumOIDInfo = NULL;
+
     if (!ret) SetLastError(pGetLastError());
     return ret;
 }

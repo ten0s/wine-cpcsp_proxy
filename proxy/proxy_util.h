@@ -21,6 +21,12 @@
 
 #include <stdint.h>
 
+typedef uint16_t wchar2_t;
+typedef uint32_t wchar4_t;
+
+size_t wc2slen(const wchar2_t *pwszStr);
+size_t wc4slen(const wchar4_t *pwwszStr);
+
 //
 // Duplicates and converts the uint16_t* string
 // to uint32_t* string.
@@ -29,6 +35,8 @@
 // To free the memory, use the free function.
 //
 uint32_t *dup_uint16_to_uint32(const uint16_t *pwszStr);
+
+wchar4_t *wc4sdup(const wchar4_t *pwwszStr);
 
 //
 // Converts the given uint32_t* string

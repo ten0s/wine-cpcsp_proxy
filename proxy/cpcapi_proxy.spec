@@ -7,6 +7,7 @@
 @ stdcall CP_CryptGetUserKey(long long ptr)
 @ stdcall CP_CryptDestroyKey(long)
 @ stdcall CP_CryptReleaseContext(long long)
+@ stdcall CP_CryptEnumOIDInfo(long long ptr ptr)
 
 # capi20
 @ stdcall CP_CryptAcquireCertificatePrivateKey(ptr long ptr ptr ptr ptr)

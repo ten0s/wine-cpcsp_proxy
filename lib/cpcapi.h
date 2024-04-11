@@ -89,6 +89,14 @@ typedef BOOL (__stdcall *CP_CryptReleaseContext_t)(
 );
 CP_CAPI_SPEC CP_CryptReleaseContext_t CP_CryptReleaseContext;
 
+typedef BOOL (__stdcall *CP_CryptEnumOIDInfo_t)(
+    DWORD dwGroupId,
+    DWORD dwFlags,
+    void *pvArg,
+    PFN_CRYPT_ENUM_OID_INFO pfnEnumOIDInfo
+);
+CP_CAPI_SPEC CP_CryptEnumOIDInfo_t CP_CryptEnumOIDInfo;
+
 // CAPI20
 
 typedef BOOL (__stdcall *CP_CryptAcquireCertificatePrivateKey_t)(

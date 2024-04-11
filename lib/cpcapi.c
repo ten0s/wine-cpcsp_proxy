@@ -55,6 +55,7 @@ BOOL CP_CAPI_Init()
     LOAD_FUNCPTR(CP_CryptGetUserKey);
     LOAD_FUNCPTR(CP_CryptDestroyKey);
     LOAD_FUNCPTR(CP_CryptReleaseContext);
+    LOAD_FUNCPTR(CP_CryptEnumOIDInfo);
 
     //
     // CAPI20

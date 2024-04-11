@@ -63,6 +63,7 @@ BOOL CP_CAPI_Init()
     LOAD_FUNCPTR(CP_CryptDecodeObjectEx);
     LOAD_FUNCPTR(CP_CryptExportPublicKeyInfo);
     LOAD_FUNCPTR(CP_CertComparePublicKeyInfo);
+    LOAD_FUNCPTR(CP_CertGetNameStringA);
     LOAD_FUNCPTR(CP_CertOpenStore);
     LOAD_FUNCPTR(CP_CertOpenSystemStoreA);
     LOAD_FUNCPTR(CP_CertOpenSystemStoreW);

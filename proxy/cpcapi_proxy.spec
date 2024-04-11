@@ -13,6 +13,7 @@
 @ stdcall CP_CryptDecodeObjectEx(long str ptr long long ptr ptr ptr)
 @ stdcall CP_CryptExportPublicKeyInfo(long long long ptr ptr)
 @ stdcall CP_CertComparePublicKeyInfo(long ptr ptr)
+@ stdcall CP_CertGetNameStringA(ptr long long ptr str long)
 @ stdcall CP_CertOpenStore(str long long long ptr)
 @ stdcall CP_CertOpenSystemStoreA(long str)
 @ stdcall CP_CertOpenSystemStoreW(long wstr)

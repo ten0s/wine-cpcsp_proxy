@@ -130,6 +130,16 @@ typedef BOOL (__stdcall *CP_CertComparePublicKeyInfo_t)(
 );
 CP_CAPI_SPEC CP_CertComparePublicKeyInfo_t CP_CertComparePublicKeyInfo;
 
+typedef DWORD (__stdcall *CP_CertGetNameStringA_t)(
+    PCCERT_CONTEXT pCertContext,
+    DWORD dwType,
+    DWORD dwFlags,
+    void *pvTypePara,
+    LPSTR pszNameString,
+    DWORD cchNameString
+);
+CP_CAPI_SPEC CP_CertGetNameStringA_t CP_CertGetNameStringA;
+
 typedef HCERTSTORE (__stdcall *CP_CertOpenStore_t)(
     LPCSTR lpszStoreProvider,
     DWORD dwEncodingType,

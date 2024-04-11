@@ -12,7 +12,7 @@ DEPS	 = Makefile
 all: cpcsp_proxy_setup.exe
 
 cpcsp_proxy_setup.exe: $(OBJ)
-	$(WINEGCC) $(CFLAGS) $^ -mconsole -municode $(LIBS) -o $@
+	$(WINEGCC) $(CFLAGS) $^ -mconsole $(LIBS) -o $@
 
 install: cpcsp_proxy_setup.exe
 	./cpcsp_proxy_setup.exe

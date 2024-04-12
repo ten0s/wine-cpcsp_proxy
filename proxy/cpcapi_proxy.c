@@ -37,8 +37,9 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpcapi_proxy);
 #define SONAME_LIBCAPI10 "/opt/cprocsp/lib/amd64/libcapi10.so"
 #define SONAME_LIBCAPI20 "/opt/cprocsp/lib/amd64/libcapi20.so"
 #else
-#define SONAME_LIBCAPI10 "/opt/cprocsp/lib/ia32/libcapi10.so"
-#define SONAME_LIBCAPI20 "/opt/cprocsp/lib/ia32/libcapi20.so"
+// Untested
+//#define SONAME_LIBCAPI10 "/opt/cprocsp/lib/ia32/libcapi10.so"
+//#define SONAME_LIBCAPI20 "/opt/cprocsp/lib/ia32/libcapi20.so"
 #endif
 
 //

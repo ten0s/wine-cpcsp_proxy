@@ -35,7 +35,8 @@ WINE_DEFAULT_DEBUG_CHANNEL(cpsspi_proxy);
 #ifdef _WIN64
 #define SONAME_LIBSSP "/opt/cprocsp/lib/amd64/libssp.so"
 #else
-#define SONAME_LIBSSP "/opt/cprocsp/lib/ia32/libssp.so"
+// Untested
+//#define SONAME_LIBSSP "/opt/cprocsp/lib/ia32/libssp.so"
 #endif
 
 //

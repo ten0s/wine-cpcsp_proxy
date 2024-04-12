@@ -23,10 +23,12 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dlfcn.h>
+#include <unistd.h> // getopt
 
 #define NONAMELESSUNION
 #include <windows.h>
 #include <wincrypt.h>
+#include <shlwapi.h>
 
 #include <wine/debug.h>
 
@@ -36,7 +38,10 @@
 
 static const char proxy_dll[] = "cpcsp_proxy.dll.so";
 
-static BOOL verbose = FALSE;
+static BOOL bSetupProviders = FALSE;
+static BOOL bSetupOIDs = FALSE;
+static BOOL bSetupCertificates = FALSE;
+static BOOL bVerbose = FALSE;
 
 struct prop_info
 {
@@ -193,10 +198,12 @@ static BOOL read_prop_info(PCCERT_CONTEXT ctx, struct cert_info *cert)
         {
             CRYPT_KEY_PROV_INFO *pinfo = (CRYPT_KEY_PROV_INFO *)cert->prop[cert->prop_count].data.pbData;
 
-            if (verbose)
+            if (bVerbose)
+            {
                 printf("CERT_KEY_PROV_INFO_PROP_ID: %s, %s, type %u, flags %#x, params: %u,%p, keyspec %#x\n",
                       debugstr_w(pinfo->pwszContainerName), debugstr_w(pinfo->pwszProvName), pinfo->dwProvType,
                       pinfo->dwFlags, pinfo->cProvParam, pinfo->rgProvParam, pinfo->dwKeySpec);
+            }
         }
 
         cert->prop_count++;
@@ -268,10 +275,11 @@ static BOOL save_prop_info(PCCERT_CONTEXT ctx, struct cert_info *cert)
         {
             CRYPT_KEY_PROV_INFO *pinfo = (CRYPT_KEY_PROV_INFO *)cert->prop[i].data.pbData;
 
-            if (verbose)
+            if (bVerbose) {
                 printf("CERT_KEY_PROV_INFO_PROP_ID: %s, %s, type %u, flags %#x, params: %u,%p, keyspec %#x\n",
                       debugstr_w(pinfo->pwszContainerName), debugstr_w(pinfo->pwszProvName), pinfo->dwProvType,
                       pinfo->dwFlags, pinfo->cProvParam, pinfo->rgProvParam, pinfo->dwKeySpec);
+            }
 
             if (!CertSetCertificateContextProperty(ctx, cert->prop[i].id, 0, cert->prop[i].data.pbData))
                 printf("CertSetCertificateContextProperty(%u) error %#x\n", cert->prop[i].id, GetLastError());
@@ -604,39 +612,93 @@ static void setup_oid_info(void)
     RegCloseKey(hkey_main);
 }
 
+static void
+usage(const char *prog)
+{
+    fprintf(stderr,
+            "Usage: %s [options...]\n"
+            "   -P   Install CPro Providers\n"
+            "   -O   Install CPro OID Infos\n"
+            "   -C   Install CPro Certificates\n"
+            "   -v   Be verbose\n"
+            "   -h   Help\n"
+            , prog
+    );
+}
+
 int main(int argc, char *argv[])
 {
     struct store_info root_store, my_store, ca_store;
 
-    if (argc > 1)
-    {
-        if (argv[1][0] == '-' && argv[1][1] == 'v')
-            verbose = TRUE;
+    char *prog = PathFindFileNameA(argv[0]);
+    PathRemoveExtensionA(prog);
+    if (argc == 1) {
+        usage(prog);
+        exit(EXIT_FAILURE);
     }
 
-    printf("=== Load CP_CAPI ===\n");
+    int opt;
+    while ((opt = getopt(argc, argv, "POCvh")) != -1) {
+        switch (opt) {
+        case 'P':
+            bSetupProviders = TRUE;
+            break;
+
+        case 'O':
+            bSetupOIDs = TRUE;
+            break;
+
+        case 'C':
+            bSetupCertificates = TRUE;
+            break;
+
+        case 'v':
+            bVerbose = TRUE;
+            break;
+
+        case 'h':
+            usage(prog);
+            exit(EXIT_SUCCESS);
+            break;
+
+        default:
+            usage(prog);
+            exit(EXIT_FAILURE);
+        }
+    }
 
     if (!CP_CAPI_Init()) return 1;
 
-    printf("=== Setup providers ===\n");
+    if (bSetupProviders)
+    {
+        printf("=== Setup Providers ===\n");
 
-    setup_providers();
+        setup_providers();
+    }
 
-    printf("=== Setup OID info ===\n");
+    if (bSetupOIDs)
+    {
+        printf("=== Setup OID Infos ===\n");
 
-    setup_oid_info();
+        setup_oid_info();
+    }
 
-    printf("=== Read CPro store ===\n");
+    if (bSetupCertificates)
+    {
+        printf("=== Read CPro Store ===\n");
 
-    read_store_info("CA", &ca_store);
-    read_store_info("Root", &root_store);
-    read_store_info("My", &my_store);
+        read_store_info("CA", &ca_store);
+        read_store_info("Root", &root_store);
+        read_store_info("My", &my_store);
 
-    printf("=== Write Wine store ===\n");
+        printf("=== Write Wine Store ===\n");
 
-    save_store_info("CA", &ca_store);
-    save_store_info("Root", &root_store);
-    save_store_info("My", &my_store);
+        save_store_info("CA", &ca_store);
+        save_store_info("Root", &root_store);
+        save_store_info("My", &my_store);
+    }
+
+    CP_CAPI_Deinit();
 
     return 0;
 }

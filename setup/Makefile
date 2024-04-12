@@ -1,7 +1,7 @@
 WINEARCH =
 WINEGCC  = winegcc $(WINEARCH)
 CFLAGS	 = -g -fPIC -O0 -Wall -D__WINESRC__
-IMPORTS	 = advapi32 crypt32 kernel32 ntdll
+IMPORTS	 = advapi32 crypt32 kernel32 ntdll shlwapi
 LIBS	 = $(IMPORTS:%=-l%) -ldl
 DEPS	 = Makefile
 

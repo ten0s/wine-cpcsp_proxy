@@ -407,7 +407,7 @@ static BOOL WINAPI enum_oid_info(PCCRYPT_OID_INFO info, void *arg)
 
     const WCHAR *name = info->pwszName;
     // Not sure why it's needed :(
-    wchar4_t *nameWW = dup_uint16_to_uint32(name);
+    wchar4_t *nameWW = dup_wc2s_to_wc4s(name);
     printf("Adding: OID %s, name %ls, GroupId %u, Algid %#x, ExtraInfo %u bytes\n",
            info->pszOID, (wchar2_t *)nameWW, info->dwGroupId,
            info->u.Algid, info->ExtraInfo.cbData);

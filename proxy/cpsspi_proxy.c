@@ -281,11 +281,11 @@ SECURITY_STATUS WINAPI CP_AcquireCredentialsHandleW(
 
     //
     // pwszPrincipal and pwszPackage must be converted to wchar4_t*.
-    // See 'Convertion Notice' lib/cpconv.h.
+    // See 'Convertion Notice' in lib/cpconv.h.
     //
 
-    wchar4_t *pwwszPrincipal = dup_uint16_to_uint32(pwszPrincipal);
-    wchar4_t *pwwszPackage   = dup_uint16_to_uint32(pwszPackage);
+    wchar4_t *pwwszPrincipal = dup_wc2s_to_wc4s(pwszPrincipal);
+    wchar4_t *pwwszPackage   = dup_wc2s_to_wc4s(pwszPackage);
 
     ret = pCPAcquireCredentialsHandleW(
         pwwszPrincipal,

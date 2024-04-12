@@ -25,7 +25,7 @@
 
 size_t wc2slen(const wchar2_t *pwszStr)
 {
-    return wcslen(pwszStr);
+    return lstrlenW(pwszStr);
 }
 
 size_t wc4slen(const wchar4_t *pwwszStr)
@@ -34,11 +34,6 @@ size_t wc4slen(const wchar4_t *pwwszStr)
     const wchar4_t *src = pwwszStr;
     while (src[i]) { i++; }
     return i;
-}
-
-wchar2_t *wc2sdup(const wchar2_t *pwszStr)
-{
-    return wcsdup(pwszStr);
 }
 
 wchar4_t *wc4sdup(const wchar4_t *pwwszStr)
@@ -52,15 +47,14 @@ wchar4_t *wc4sdup(const wchar4_t *pwwszStr)
     return pwwszStr2;
 }
 
-wchar4_t *dup_uint16_to_uint32(const wchar2_t *pwszStr)
+wchar4_t *dup_wc2s_to_wc4s(const wchar2_t *pwszStr)
 {
     wchar4_t *pwwszStr = NULL;
 
     if (pwszStr)
     {
-        // TODO: use wc2slen
-        size_t len = lstrlenW(pwszStr) + 1;
-        pwwszStr = calloc(len + 1, sizeof(wchar4_t));
+        size_t len = wc2slen(pwszStr) + 1;
+        pwwszStr = calloc(len, sizeof(wchar4_t));
         for (size_t i = 0; i < len; i++)
         {
             pwwszStr[i] = pwszStr[i];
@@ -70,7 +64,7 @@ wchar4_t *dup_uint16_to_uint32(const wchar2_t *pwszStr)
     return pwwszStr;
 }
 
-void conv_uint32_to_uint16(wchar4_t *pwwszStr)
+void conv_wc4s_to_wc2s(wchar4_t *pwwszStr)
 {
     if (!pwwszStr) return;
 

@@ -25,6 +25,7 @@
 #include <dlfcn.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <threads.h>
 // Wine
 #include <wine/debug.h>
 
@@ -532,7 +533,7 @@ typedef struct {
 
 // Crypto Pro implementation of CryptEnumOIDInfo is broken,
 // it doesn't use WINAPI for a callback.
-static PFN_CRYPT_ENUM_OID_INFO g_pfnEnumOIDInfo;
+static thread_local PFN_CRYPT_ENUM_OID_INFO g_pfnEnumOIDInfo;
 static BOOL /*WINAPI*/ EnumOIDInfo(const CPro_OID_INFO *info, void *arg)
 {
     if (!g_pfnEnumOIDInfo) return FALSE;
@@ -564,7 +565,6 @@ BOOL WINAPI CP_CryptEnumOIDInfo(DWORD dwGroupId,
     BOOL ret;
     TRACE("\n");
 
-    // TODO: Add mutex here.
     g_pfnEnumOIDInfo = pfnEnumOIDInfo;
     ret = pCryptEnumOIDInfo(dwGroupId,
                             dwFlags,

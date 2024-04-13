@@ -791,10 +791,13 @@ BOOL WINAPI CP_CertControlStore(HCERTSTORE hCertStore,
 BOOL WINAPI CP_CertCloseStore(HCERTSTORE hCertStore,
                               DWORD dwFlags)
 {
-    BOOL ret;
+    BOOL ret = TRUE;
     TRACE("\n");
-    ret = pCertCloseStore(hCertStore, dwFlags);
-    if (!ret) SetLastError(pGetLastError());
+    if (hCertStore)
+    {
+        ret = pCertCloseStore(hCertStore, dwFlags);
+        if (!ret) SetLastError(pGetLastError());
+    }
     return ret;
 }
 
@@ -979,10 +982,13 @@ BOOL WINAPI CP_CertAddCertificateContextToStore(HCERTSTORE hCertStore,
 
 BOOL WINAPI CP_CertFreeCertificateContext(PCCERT_CONTEXT pCertContext)
 {
-    BOOL ret;
+    BOOL ret = TRUE;
     TRACE("\n");
-    ret = pCertFreeCertificateContext(pCertContext);
-    if (!ret) SetLastError(pGetLastError());
+    if (pCertContext)
+    {
+        ret = pCertFreeCertificateContext(pCertContext);
+        if (!ret) SetLastError(pGetLastError());
+    }
     return ret;
 }
 
@@ -1012,5 +1018,8 @@ BOOL WINAPI CP_CertGetCertificateChain(HCERTCHAINENGINE hChainEngine,
 VOID WINAPI CP_CertFreeCertificateChain(PCCERT_CHAIN_CONTEXT pChainContext)
 {
     TRACE("\n");
-    pCertFreeCertificateChain(pChainContext);
+    if (pChainContext)
+    {
+        pCertFreeCertificateChain(pChainContext);
+    }
 }

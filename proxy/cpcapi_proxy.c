@@ -27,6 +27,9 @@
 #include <stdlib.h>
 #if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201102L) && !defined(__STDC_NO_THREADS__)
 #  include <threads.h>
+#  define THREAD_LOCAL thread_local
+#else
+#  define THREAD_LOCAL
 #endif
 // Wine
 #include <wine/debug.h>
@@ -536,11 +539,7 @@ typedef struct {
 
 // Crypto Pro implementation of CryptEnumOIDInfo is broken,
 // it doesn't use WINAPI for a callback.
-#if defined(__STDC_VERSION__) && (__STDC_VERSION__ >= 201102L) && !defined(__STDC_NO_THREADS__)
-static thread_local PFN_CRYPT_ENUM_OID_INFO g_pfnEnumOIDInfo;
-#else
-static PFN_CRYPT_ENUM_OID_INFO g_pfnEnumOIDInfo;
-#endif
+static THREAD_LOCAL PFN_CRYPT_ENUM_OID_INFO g_pfnEnumOIDInfo;
 static BOOL /*WINAPI*/ EnumOIDInfo(const CPro_OID_INFO *info, void *arg)
 {
     if (!g_pfnEnumOIDInfo) return FALSE;

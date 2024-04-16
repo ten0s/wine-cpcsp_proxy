@@ -16,7 +16,7 @@ cpsspi_proxy.dll.so: cpsspi_proxy.c cpsspi_proxy.spec ../lib/cpconv.c
 cpcapi_proxy.dll.so: cpcapi_proxy.c cpcapi_proxy.spec ../lib/cpconv.c
 	$(WINEGCC) $(CFLAGS) -shared $^ $(LIBS) -o $@
 
-install: cpcsp_proxy.dll.so
+install: all
 	cp -f cpcsp_proxy.dll.so  $(WINEPREFIX)/drive_c/windows/system32/
 	cp -f cpsspi_proxy.dll.so $(WINEPREFIX)/drive_c/windows/system32/
 	cp -f cpcapi_proxy.dll.so $(WINEPREFIX)/drive_c/windows/system32/

@@ -10,7 +10,7 @@ all: cpcsp_proxy_setup.exe
 cpcsp_proxy_setup.exe: cpcsp_proxy_setup.c ../lib/cpcapi.c ../lib/cpconv.c
 	$(WINEGCC) $(CFLAGS) $^ -mconsole $(LIBS) -o $@
 
-install: cpcsp_proxy_setup.exe
+install: all
 	./cpcsp_proxy_setup.exe -P -O
 
 clean:

@@ -32,15 +32,21 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(cpsspi_proxy);
 
-#ifdef _WIN64
-#define SONAME_LIBSSP "/opt/cprocsp/lib/amd64/libssp.so"
-#else
-// Untested
-//#define SONAME_LIBSSP "/opt/cprocsp/lib/ia32/libssp.so"
+#ifdef __linux__
+  #ifdef __x86_64__
+    #define SONAME_LIBSSP "/opt/cprocsp/lib/amd64/libssp.so"
+  #else
+    // Untested
+    //#define SONAME_LIBSSP "/opt/cprocsp/lib/ia32/libssp.so"
+  #endif
+#endif
+
+#ifdef __APPLE__
+  #define SONAME_LIBSSP "/opt/cprocsp/lib/libssp.dylib"
 #endif
 
 //
-// _WIN64 only!
+// __x86_64__ only!
 //
 
 typedef struct {
@@ -76,7 +82,7 @@ static void CP2Win_SecPkgContext_StreamSizes(const CP_SecPkgContext_StreamSizes 
 static const char *SecPkgAttr2Str(ULONG ulAttribute);
 
 //
-// CryptoPro uses default calling convention on Linux
+// CryptoPro uses default calling convention on Linux and MacOS
 //
 
 //

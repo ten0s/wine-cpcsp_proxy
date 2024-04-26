@@ -38,21 +38,28 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(cpcapi_proxy);
 
-#ifdef _WIN64
-#define SONAME_LIBCAPI10 "/opt/cprocsp/lib/amd64/libcapi10.so"
-#define SONAME_LIBCAPI20 "/opt/cprocsp/lib/amd64/libcapi20.so"
-#else
-// Untested
-//#define SONAME_LIBCAPI10 "/opt/cprocsp/lib/ia32/libcapi10.so"
-//#define SONAME_LIBCAPI20 "/opt/cprocsp/lib/ia32/libcapi20.so"
+#ifdef __linux__
+  #ifdef __x86_64__
+    #define SONAME_LIBCAPI10 "/opt/cprocsp/lib/amd64/libcapi10.so"
+    #define SONAME_LIBCAPI20 "/opt/cprocsp/lib/amd64/libcapi20.so"
+  #else
+    // Untested
+    //#define SONAME_LIBCAPI10 "/opt/cprocsp/lib/ia32/libcapi10.so"
+    //#define SONAME_LIBCAPI20 "/opt/cprocsp/lib/ia32/libcapi20.so"
+  #endif
+#endif
+
+#ifdef __APPLE__
+  #define SONAME_LIBCAPI10 "/opt/cprocsp/lib/libcapi10.dylib"
+  #define SONAME_LIBCAPI20 "/opt/cprocsp/lib/libcapi20.dylib"
 #endif
 
 //
-// _WIN64 only!
+// __x86_64__ only!
 //
 
 //
-// CryptoPro uses default calling convention on Linux
+// CryptoPro uses default calling convention on Linux and MacOS
 //
 
 //

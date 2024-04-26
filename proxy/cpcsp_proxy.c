@@ -31,15 +31,24 @@
 
 WINE_DEFAULT_DEBUG_CHANNEL(cpcsp_proxy);
 
-#ifdef _WIN64
-#define SONAME_LIBSSP "/opt/cprocsp/lib/amd64/libssp.so"
-#else
-#define SONAME_LIBSSP "/opt/cprocsp/lib/ia32/libssp.so"
+#ifdef __linux__
+  #ifdef __x86_64__
+    #define SONAME_LIBSSP "/opt/cprocsp/lib/amd64/libssp.so"
+  #else
+    #define SONAME_LIBSSP "/opt/cprocsp/lib/ia32/libssp.so"
+  #endif
+#endif
+
+#ifdef __APPLE__
+  #define SONAME_LIBSSP "/opt/cprocsp/lib/libssp.dylib"
 #endif
 
 static void *libssp_handle;
 
-/* CryptoPro uses default calling convention under linux */
+//
+// CryptoPro uses default calling convention on Linux and MacOS
+//
+
 static BOOL (*pCryptAcquireContextA)(HCRYPTPROV *,LPCSTR,LPCSTR,DWORD,DWORD);
 static BOOL (*pCryptReleaseContext)(HCRYPTPROV,ULONG_PTR);
 static BOOL (*pCryptSetProvParam)(HCRYPTPROV,DWORD,const BYTE *,DWORD);

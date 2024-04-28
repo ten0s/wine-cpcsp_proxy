@@ -61,8 +61,7 @@ typedef struct {
     CP_SecBuffer *pBuffers;
 } CP_SecBufferDesc;
 
-typedef struct
-{
+typedef struct {
     uint64_t   cbHeader;
     uint64_t   cbTrailer;
     uint64_t   cbMaximumMessage;

@@ -544,8 +544,8 @@ typedef struct {
     CRYPT_DATA_BLOB ExtraInfo;
 } CPro_OID_INFO;
 
-// Crypto Pro implementation of CryptEnumOIDInfo is broken,
-// it doesn't use WINAPI for a callback.
+// CryptoPro implementation of CryptEnumOIDInfo
+// doesn't use WINAPI for a callback.
 static THREAD_LOCAL PFN_CRYPT_ENUM_OID_INFO g_pfnEnumOIDInfo;
 static BOOL /*WINAPI*/ EnumOIDInfo(const CPro_OID_INFO *info, void *arg)
 {

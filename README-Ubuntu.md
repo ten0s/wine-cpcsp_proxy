@@ -106,7 +106,7 @@ winegcc  -g -fPIC -O2 -Wall -D__WINESRC__ cpcsp_proxy_setup.o -mconsole -municod
 $ cd ..
 ```
 
-### Установка Копирование
+### Установка wine-cpcsp_proxy в Wine
 
 ```
 $ cp cpcsp_proxy/*.dll.so ~/.wine/drive_c/windows/system32/

@@ -124,3 +124,7 @@ Adding: provider Crypto-Pro GOST R 34.10-2012 Cryptographic Service Provider, ty
 Saving certificate L"CryptoPro GOST Root CA" to Root store
 Saving certificates to My store
 ```
+
+## Пример использования
+
+https://github.com/ten0s/ccm4-wine-cryptopro
